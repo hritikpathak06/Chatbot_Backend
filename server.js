@@ -20,7 +20,7 @@ connectDB();
 // }));
 // app.use(cors());
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://chatbot-ashen-tau.vercel.app',
   credentials: true,
 }));
 app.use(cookieParser());
@@ -42,7 +42,7 @@ app.use("/api/v1/openai", openAiRoutes);
 
 // Default Api
 app.get("/", (req, res) => {
-  res.send("On Dev Mode 😁");
+  res.send("On Dev Mode || Cors Origin Changed 😁");
 });
 
 // Server Config
