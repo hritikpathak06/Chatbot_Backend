@@ -6,7 +6,6 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./db/connection");
-const cookieParser = require("cookie-parser");
 
 // Config
 dotenv.config();
@@ -14,16 +13,7 @@ connectDB();
 
 
 // Middlewares
-// app.use(cors({
-//   credentials:true,
-//   methods:["GET","POST","PUT","DELETE"]
-// }));
-// app.use(cors());
-app.use(cors({
-  origin: 'https://chatbot-ashen-tau.vercel.app',
-  credentials: true,
-}));
-app.use(cookieParser());
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("common"));
 app.use(express.json());
@@ -42,7 +32,7 @@ app.use("/api/v1/openai", openAiRoutes);
 
 // Default Api
 app.get("/", (req, res) => {
-  res.send("On Dev Mode || Cors Origin Changed 😁");
+  res.send("On Dev Mode || All Changes Done 😁");
 });
 
 // Server Config

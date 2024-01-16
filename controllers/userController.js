@@ -1,5 +1,4 @@
 const User = require("../models/userSchema");
-const sendToken = require("../utils/sendToken");
 
 // Register User
 const registerUserController = async (req, res) => {
@@ -18,9 +17,14 @@ const registerUserController = async (req, res) => {
         message: "Email Already Exists",
       });
     }
-    //  add user to the database
     user = await User.create({ username, email, password });
-    sendToken(res, user, "user registered successfully", 201);
+    const token = user.getJWTToken();
+    res.status(201).json({
+      success:true,
+      message:"User Created Successfully",
+      user,
+      token
+    })
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -29,6 +33,7 @@ const registerUserController = async (req, res) => {
     });
   }
 };
+
 
 // Login User
 const loginUserController = async (req, res) => {
@@ -41,7 +46,6 @@ const loginUserController = async (req, res) => {
         message: "Please Fill All The Fields",
       });
     }
-
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
@@ -49,7 +53,6 @@ const loginUserController = async (req, res) => {
         message: "User Doesn't Exists",
       });
     }
-
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({
@@ -57,7 +60,13 @@ const loginUserController = async (req, res) => {
         message: "Invalid Credentials",
       });
     }
-    sendToken(res, user, `Welcome Back,${user.username}`, 200);
+    const token = user.getJWTToken();
+    res.status(200).json({
+      success:true,
+      message:"User Logged In Successfully",
+      user,
+      token
+    })
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -67,27 +76,6 @@ const loginUserController = async (req, res) => {
   }
 };
 
-
-// Logout User
-const logoutUserController = async (req, res) => {
-  try {
-    res
-      .status(200)
-      .cookie("token", null, {
-        expires: new Date(Date.now()),
-      })
-      .json({
-        success: true,
-        message: "User Loggeout Successfullly",
-      });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: "Intrnal Server Error While Logout the User",
-    });
-  }
-};
 
 
 // Get User Profile
@@ -125,7 +113,6 @@ const updateUserProfile = async (req, res) => {
 module.exports = {
   registerUserController,
   loginUserController,
-  logoutUserController,
   getUserProfile,
   updateUserProfile,
 };

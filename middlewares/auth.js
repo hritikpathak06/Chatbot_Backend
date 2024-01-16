@@ -1,26 +1,20 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/userSchema");
-
 
 const isAuthenticated = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "Please Login To Access",
-      });
-    }
-    const decoded = jwt.verify(token,process.env.JWT_SECRET_KEY);
-    req.user = await User.findById(decoded._id);
+    const decode = jwt.verify(
+      req.headers.authorization,
+      process.env.JWT_SECRET_KEY
+    );
+    req.user = decode;
     next();
   } catch (error) {
     console.log(error);
-   res.status(500).json({
-    success:false,
-    message:"Internal Server Error While Authenticating User"
-   })
+    res.status(404).send({
+      success: false,
+      message: "Please login to continue the process",
+    });
   }
 };
 
-module.exports = {isAuthenticated};
+module.exports = { isAuthenticated };
